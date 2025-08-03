@@ -1,26 +1,23 @@
 import { Typography } from '@/components/ui/Typography';
 import { useTheme } from '@/hooks/useTheme';
 import { StyleSheet, View } from 'react-native';
-import { IconName, IconSymbol } from './ui/IconSymbol';
+import ButtonIcon from './ui/ButtonIcon';
+import { IconName } from './ui/IconSymbol';
 
 
 export type HeaderProps = {
   title: string;
   icon?: IconName
+  onPress?: () => void;
 };
 
-export default function Header({title, icon}: HeaderProps) {
+export default function Header({title, icon, onPress}: HeaderProps) {
   const {colors} = useTheme()
   return (
     <View
         style={[styles.header, { backgroundColor: colors.background.secondary,  }]}
       >
-       {icon && <IconSymbol
-                name={icon}
-                size={18}
-                weight="medium"
-                color={colors.content.secondary}
-              />}
+       {icon && onPress && <ButtonIcon onPress={onPress} icon={icon} size={32}/>}
       <Typography color={colors.content.secondary} variant="title">{title}</Typography>
     </View>
   );

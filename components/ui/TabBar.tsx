@@ -1,13 +1,11 @@
 import { useTheme } from "@/hooks/useTheme";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { useLinkBuilder } from "@react-navigation/native";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Typography } from "./Typography";
 
 const TabBar = ({state, descriptors, navigation}: BottomTabBarProps) => {
     const {colors } = useTheme()
-  const { buildHref } = useLinkBuilder();
-  console.log(state)
+
     return (
          <View style={{ flexDirection: 'row' }}>
       {state.routes.map((route, index) => {
@@ -27,6 +25,7 @@ const TabBar = ({state, descriptors, navigation}: BottomTabBarProps) => {
           });
 
           if (!isFocused && !event.defaultPrevented) {
+            console.log(route.name)
             navigation.navigate(route.name, route.params);
           }
         };
