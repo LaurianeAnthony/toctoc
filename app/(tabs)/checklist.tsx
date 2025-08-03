@@ -3,12 +3,11 @@ import Screen from '@/components/Screen';
 
 
 
-export default function CalendarScreen() {
+export default function ChecklistScreen() {
   return (
     <Screen>
-      <Header title="Calendar" />
+      <Header title="Checklists" />
     </Screen>
   );
 }
-
 
