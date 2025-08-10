@@ -1,7 +1,5 @@
-import Header from '@/components/Header';
-import Screen from '@/components/Screen';
-
-
+import Header from "@/components/Header";
+import Screen from "@/components/Screen";
 
 export default function ChecklistScreen() {
   return (
@@ -10,4 +8,3 @@ export default function ChecklistScreen() {
     </Screen>
   );
 }
-

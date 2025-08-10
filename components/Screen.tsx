@@ -1,11 +1,9 @@
-import { useTheme } from '@/hooks/useTheme';
-import { PropsWithChildren } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useTheme } from "@/hooks/useTheme";
+import { PropsWithChildren } from "react";
+import { StyleSheet, View } from "react-native";
 
-
-
-export default function Screen({children}: PropsWithChildren) {
-  const {colors} = useTheme()
+export default function Screen({ children }: PropsWithChildren) {
+  const { colors } = useTheme();
   return (
     <View style={[styles.root, { backgroundColor: colors.background.layout }]}>
       {children}
@@ -15,7 +13,6 @@ export default function Screen({children}: PropsWithChildren) {
 
 const styles = StyleSheet.create({
   root: {
-    height: '100%',
+    height: "100%",
   },
 });
-
