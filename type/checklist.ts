@@ -1,24 +1,28 @@
-export type ChecklistInstance = {
+type Step = {
   id: string;
   title: string;
-  checklistId: string;
-  items: {
-    id: string;
-    title: string;
-    completedAt: string | null;
-    image?: string;
-  }[];
+  imageRequired: boolean;
+};
+
+type StepInstance = {
+  id: string;
+  title: string;
   completedAt: string | null;
+  image?: string;
 };
 
 export type Checklist = {
   id: string;
   title: string;
   order: number;
-  items: {
-    id: string;
-    title: string;
-    imageRequired: boolean;
-  }[];
+  items: Step[];
   createdAt: string | null;
+};
+
+export type ChecklistInstance = {
+  id: string;
+  title: string;
+  checklistId: string;
+  items: StepInstance[];
+  completedAt: string | null;
 };
