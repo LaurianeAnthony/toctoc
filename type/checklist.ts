@@ -24,5 +24,6 @@ export type ChecklistInstance = {
   title: string;
   checklistId: string;
   items: StepInstance[];
+  createdAt: string | null;
   completedAt: string | null;
 };

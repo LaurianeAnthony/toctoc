@@ -27,22 +27,24 @@ export default function RootLayout() {
         DROP TABLE IF EXISTS checklist_instances
     `);
 
-    // Create checklists table
+    // Create checklists instances table
     await db.execAsync(`
       PRAGMA journal_mode = 'wal';
       CREATE TABLE IF NOT EXISTS checklist_instances (
         id INTEGER PRIMARY KEY NOT NULL,
         title TEXT NOT NULL,
+        checklistId INTEGER NOT NULL,
         createdAt TEXT NOT NULL DEFAULT (datetime('now')),
-        updatedAt TEXT NOT NULL DEFAULT (datetime('now'))
+        completedAt TEXT DEFAULT NULL
       );
     `);
 
     // Seed some data
     await db.execAsync(`
-      INSERT INTO checklist_instances (id, title) VALUES
-      (1, 'Départ de la maison'),
-      (2, 'Checkliste de voyage');
+      INSERT INTO checklist_instances (id, title, checklistId) VALUES
+      (1, 'Départ de la maison', 1),
+      (2, 'Checkliste de voyage', 1),
+      (3, 'Nourrir le gros chat', 1)
     `);
   };
 
