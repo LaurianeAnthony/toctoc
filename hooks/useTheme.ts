@@ -11,5 +11,14 @@ export function useTheme() {
 
   return {
     colors: Colors.light,
+    spaces: {
+      4: 4,
+      8: 8,
+      16: 16,
+      20: 20,
+      24: 24,
+      32: 32,
+      40: 40,
+    },
   };
 }

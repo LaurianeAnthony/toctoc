@@ -1,21 +1,22 @@
 import Header from "@/components/Header";
 import Screen from "@/components/Screen";
+import ButtonItem from "@/components/ui/ButtonItem";
 import { Typography } from "@/components/ui/Typography";
 import { useTheme } from "@/hooks/useTheme";
-import { useRouter } from "expo-router";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { useEffect, useState } from "react";
-import { useSQLiteContext } from "expo-sqlite";
-import { ChecklistInstance } from "@/type/checklist";
 import { ChecklistInstanceRepository } from "@/lib/repositories/checklistInstanceRepository";
 import { StepInstanceRepository } from "@/lib/repositories/stepInstanceRepository";
+import { ChecklistInstance } from "@/type/checklist";
+import { useRouter } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { useEffect, useState } from "react";
+import { FlatList, View } from "react-native";
 
 export default function CalendarScreen() {
-  const { colors } = useTheme();
+  const { spaces } = useTheme();
   const router = useRouter();
 
-  const onPress = () => {
-    router.navigate("/checklist-instance");
+  const onPress = (id: string) => {
+    router.navigate(`/checklist-instance?${id}`);
   };
 
   const db = useSQLiteContext();
@@ -47,7 +48,7 @@ export default function CalendarScreen() {
   }, [db]);
 
   const getItem = (checklistInstance: ChecklistInstance) => (
-    <View style={{ padding: 10 }}>
+    <View>
       <Typography style={{ paddingBottom: 12 }}>
         {new Date(checklistInstance.createdAt).toLocaleDateString(undefined, {
           weekday: "long",
@@ -55,46 +56,32 @@ export default function CalendarScreen() {
           day: "numeric",
         })}
       </Typography>
-      <TouchableOpacity
-        style={[styles.item, { borderColor: colors.border.default }]}
-        onPress={onPress}
-      >
-        <Typography color={colors.content.subdued}>
-          {new Date(checklistInstance.createdAt).toLocaleTimeString(undefined, {
+      <ButtonItem
+        onPress={() => onPress(checklistInstance.id)}
+        title={checklistInstance.title}
+        leftContent={`${checklistInstance.steps.filter((step) => step.completedAt).length}/${checklistInstance.steps.length}`}
+        rightContent={new Date(checklistInstance.createdAt).toLocaleTimeString(
+          undefined,
+          {
             hour: "2-digit",
             minute: "2-digit",
-          })}
-        </Typography>
-        <Typography>{checklistInstance.title}</Typography>
-        <View>
-          <Typography color={colors.content.subdued}>
-            {checklistInstance.steps.filter((step) => step.completedAt).length}/
-            {checklistInstance.steps.length}
-          </Typography>
-        </View>
-      </TouchableOpacity>
+          },
+        )}
+      />
     </View>
   );
 
   return (
     <Screen>
       <Header title="Calendar" />
-      <FlatList
-        data={checklistInstances}
-        renderItem={({ item }) => getItem(item)}
-        keyExtractor={(item) => item.id}
-      />
+      <View style={{ padding: spaces[20] }}>
+        <FlatList
+          contentContainerStyle={{ gap: spaces[8] }}
+          data={checklistInstances}
+          renderItem={({ item }) => getItem(item)}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  item: {
-    padding: 12,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderWidth: 2,
-    borderRadius: 12,
-  },
-});
