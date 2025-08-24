@@ -1,31 +1,76 @@
 import Header from "@/components/Header";
 import Screen from "@/components/Screen";
 import { ChecklistInstance } from "@/type/checklist";
-import { useRouter } from "expo-router";
-import { View } from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { View, Text, ActivityIndicator } from "react-native";
+import { useSQLiteContext } from "expo-sqlite";
+import { ChecklistInstanceRepository } from "@/lib/repositories/checklistInstanceRepository";
+import { StepInstanceRepository } from "@/lib/repositories/stepInstanceRepository";
+import { useEffect, useState } from "react";
 
 export default function InstanceScreen() {
   const router = useRouter();
-  const checklistInstance: ChecklistInstance = {
-    id: "1",
-    checklistId: "checklist-1",
-    title: "Partir de la maison",
-    completedAt: "2023-10-01T10:11:00Z",
-    items: [
-      {
-        id: "1",
-        title: "Prendre les clés",
-        completedAt: "2023-10-01T10:00:00Z",
-      },
-      { id: "2", title: "Prendre le sac", completedAt: "2023-10-01T10:05:00Z" },
-      { id: "3", title: "Vérifier le téléphone", completedAt: null },
-      {
-        id: "4",
-        title: "Fermer la porte",
-        completedAt: "2023-10-01T10:10:00Z",
-      },
-    ],
-  };
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const db = useSQLiteContext();
+  const [checklistInstance, setChecklistInstance] =
+    useState<ChecklistInstance | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadChecklistInstance = async () => {
+      try {
+        const checklistRepo = new ChecklistInstanceRepository(db);
+        const stepRepo = new StepInstanceRepository(db);
+
+        const instance = await checklistRepo.findById(id);
+        if (instance) {
+          const steps = await stepRepo.findByChecklistInstanceId(id);
+          setChecklistInstance({
+            ...instance,
+            steps: steps.map((step) => ({
+              ...step,
+            })),
+          });
+        }
+      } catch (error) {
+        console.error("Error loading checklist instance:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadChecklistInstance();
+  }, [db, id]);
+
+  if (loading) {
+    return (
+      <Screen>
+        <Header
+          title="Loading..."
+          icon="chevron-left"
+          onPress={() => router.back()}
+        />
+        <View>
+          <ActivityIndicator size="large" />
+        </View>
+      </Screen>
+    );
+  }
+
+  if (!checklistInstance) {
+    return (
+      <Screen>
+        <Header
+          title="Not Found"
+          icon="chevron-left"
+          onPress={() => router.back()}
+        />
+        <View>
+          <Text>Checklist instance not found</Text>
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen>
@@ -35,7 +80,35 @@ export default function InstanceScreen() {
         onPress={() => router.back()}
       />
 
-      <View style={{ padding: 20 }}></View>
+      <View>
+        <Text>
+          Created:{" "}
+          {checklistInstance.createdAt
+            ? new Date(checklistInstance.createdAt).toLocaleDateString()
+            : "Unknown"}
+        </Text>
+
+        {checklistInstance.completedAt && (
+          <Text>
+            Completed:{" "}
+            {new Date(checklistInstance.completedAt).toLocaleDateString()}
+          </Text>
+        )}
+
+        <View>
+          <Text>Steps:</Text>
+          {checklistInstance.steps.map((item) => (
+            <View key={item.id}>
+              <Text>
+                {item.completedAt ? "✓" : "○"} {item.title}
+              </Text>
+              {item.completedAt && (
+                <Text>{new Date(item.completedAt).toLocaleTimeString()}</Text>
+              )}
+            </View>
+          ))}
+        </View>
+      </View>
     </Screen>
   );
 }
