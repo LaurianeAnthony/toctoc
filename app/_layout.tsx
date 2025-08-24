@@ -8,7 +8,8 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { SQLiteDatabase, SQLiteProvider } from "expo-sqlite";
+import { SQLiteProvider } from "expo-sqlite";
+import { initializeDatabase } from "@/lib/database";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -21,36 +22,9 @@ export default function RootLayout() {
     return null;
   }
 
-  const initDb = async (db: SQLiteDatabase): Promise<void> => {
-    // Drop checklists table
-    await db.execAsync(`
-        DROP TABLE IF EXISTS checklist_instances
-    `);
-
-    // Create checklists instances table
-    await db.execAsync(`
-      PRAGMA journal_mode = 'wal';
-      CREATE TABLE IF NOT EXISTS checklist_instances (
-        id INTEGER PRIMARY KEY NOT NULL,
-        title TEXT NOT NULL,
-        checklistId INTEGER NOT NULL,
-        createdAt TEXT NOT NULL DEFAULT (datetime('now')),
-        completedAt TEXT DEFAULT NULL
-      );
-    `);
-
-    // Seed some data
-    await db.execAsync(`
-      INSERT INTO checklist_instances (id, title, checklistId) VALUES
-      (1, 'Départ de la maison', 1),
-      (2, 'Checkliste de voyage', 1),
-      (3, 'Nourrir le gros chat', 1)
-    `);
-  };
-
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <SQLiteProvider databaseName="toctoc.db" onInit={initDb}>
+      <SQLiteProvider databaseName="toctoc.db" onInit={initializeDatabase}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
