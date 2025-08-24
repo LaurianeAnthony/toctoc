@@ -1,11 +1,12 @@
-type Step = {
+export type Step = {
   id: string;
   title: string;
   imageRequired: boolean;
 };
 
-type StepInstance = {
+export type StepInstance = {
   id: string;
+  checklistInstanceId: string;
   title: string;
   completedAt: string | null;
   image?: string;
@@ -16,14 +17,14 @@ export type Checklist = {
   title: string;
   order: number;
   items: Step[];
-  createdAt: string | null;
+  createdAt: null;
 };
 
 export type ChecklistInstance = {
   id: string;
   title: string;
   checklistId: string;
-  items: StepInstance[];
-  createdAt: string | null;
+  steps: StepInstance[];
+  createdAt: string;
   completedAt: string | null;
 };
